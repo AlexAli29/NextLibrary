@@ -1,0 +1,106 @@
+'use client'
+import Link from "next/link"
+import { useForm } from "react-hook-form"
+import { useLoginMutation, useGetUserMutation } from "@/services/api/handleReqApiSlice"
+import { useRouter } from "next/navigation"
+import { useDispatch } from "react-redux"
+import { setToken } from "@/slices/tokenSlice"
+import { setUserData } from "@/slices/userSlice";
+import GoogleIcon from "./ui/GoogleIcon"
+
+export const LoginForm = () => {
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+
+  const [loginUser, { isLoading }] = useLoginMutation();
+  const [getUser, { isLoading: userLoading }] = useGetUserMutation();
+
+  const onSubmit = async (data) => {
+    const { Name: userName, password } = data;
+    debugger
+    try {
+
+      const { data } = await loginUser({ userName, password });
+      debugger
+      if (data.status == 409) {
+
+      }
+
+      if (data.status == 200) {
+        const { accessToken } = data;
+
+        dispatch(setToken(accessToken));
+        const { data: userData } = await getUser();
+        const { userData: user } = userData;
+        dispatch(setUserData(user));
+        router.push('/');
+        reset
+
+      }
+
+    } catch (err) {
+      console.log(err)
+
+    }
+
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="">
+        <input  {...register('Name', {
+          required: "User Name is required field"
+        })} className=" w-full text-sm  px-4 py-3 bg-slate-50 focus:bg-white border  border-gray-200 rounded-lg focus:outline-none focus:border-red-300" type="" placeholder="User Name" />
+        {errors?.Name && (
+          <div className="text-xs text-red-600 pl-6 pt-1 ">{errors.Name.message}</div>
+        )}
+      </div>
+
+
+      <div className="relative" >
+        <input  {...register('password', {
+          required: "Password is required field"
+        })} placeholder="Password" className="text-sm text-gray-200 px-4 py-3 rounded-lg w-full bg-slate-50 focus:bg-white border border border-gray-200 focus:outline-none focus:border-red-300" />
+        {errors?.password && (
+          <div className="text-xs text-red-600 pl-6 pt-1 ">{errors.password.message}</div>
+        )}
+      </div>
+
+
+      <div className="flex items-center justify-between">
+
+        <div className="text-sm ml-auto">
+          <Link href="#" className="text-red-400 hover:text-red-500">
+            Forgot your password?
+          </Link>
+        </div>
+      </div>
+      <div>
+        <button type="submit" className="w-full flex justify-center bg-red-400 text-gray-100 p-3  rounded-lg tracking-wide font-semibold  cursor-pointer transition ease-in duration-500">
+          Sign in
+        </button>
+      </div>
+      <div className="flex items-center justify-center space-x-2 my-5">
+        <span className="h-px w-16 bg-gray-100"></span>
+        <span className="text-gray-300 font-normal">or</span>
+        <span className="h-px w-16 bg-gray-100"></span>
+      </div>
+      <div className="flex justify-center gap-5 w-full ">
+
+        <button type="submit" className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500">
+          <GoogleIcon />
+          <span>Google</span>
+        </button>
+
+        <button type="submit" className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500 px-" >
+          Telegram
+        </button>
+
+      </div>
+    </form  >
+  )
+}
+

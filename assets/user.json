@@ -1,0 +1,7 @@
+{
+  "userId": 123,
+  "userName": "John Doe",
+  "userEmail": "johndoe@example.com",
+  "userImage": "https://example.com/images/johndoe.jpg",
+  "passwordHash": "c2VjcmV0X3Bhc3N3b3JkMTIzNDU2"
+}
