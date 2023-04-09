@@ -5,11 +5,23 @@ const getAllBooks = async () => {
   try {
     const pool = await connect();
 
-    const data = await pool.request().query('SELECT * FROM Books')
+    const data = await pool.request().query('SELECT * FROM Books WHERE isArchived=0')
 
     return data.recordset;
   } catch (err) {
     console.log("Error from getAllBooks:" + err);
+  }
+};
+
+const getAllBooksAdmin = async () => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query('SELECT * FROM Books')
+
+    return data.recordset;
+  } catch (err) {
+    console.log("Error from getAllBooksAdmin:" + err);
   }
 };
 
@@ -32,6 +44,80 @@ const getSearchedBooks = async (searchString, year, price) => {
   }
 };
 
+const addBook = async (book) => {
+
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+      .input('bookName', book.bookName)
+      .input('bookPrice', book.bookPrice)
+      .input('bookRating', 0)
+      .input('bookAuthor', book.bookAuthor)
+      .input('bookYear', book.bookYear)
+      .input('bookDescription', book.bookDescription)
+      .input('bookImage', book.bookImage)
+      .input('categoryId', book.categoryId)
+      .input('isArchived', book.isArchived)
+      .output('bookId', sql.Int)
+      .query(`
+      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, bookImage, categoryId, isArchived)
+      OUTPUT inserted.bookId
+      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @bookImage, @categoryId, @isArchived)
+    `);
+
+    const newBookId = result.recordset[0].userId;
+    return newBookId;
+
+  } catch (err) {
+
+    console.log('Error from addUser: ' + err);
+  }
+}
+
+const updateBook = async (book) => {
+
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+      .input('bookName', book.bookName)
+      .input('bookPrice', book.bookPrice)
+      .input('bookRating', 0)
+      .input('bookAuthor', book.bookAuthor)
+      .input('bookYear', book.bookYear)
+      .input('bookDescription', book.bookDescription)
+      .input('bookImage', book.bookImage)
+      .input('categoryId', book.categoryId)
+      .input('isArchived', book.isArchived)
+      .output('bookId', sql.Int)
+      .query(`
+      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived
+WHERE bookId = @bookId
+    `);
+
+    const updatedBookId = result.recordset[0].userId;
+    return updatedBookId;
+
+  } catch (err) {
+
+    console.log('Error from addUser: ' + err);
+  }
+}
+
+const getAllCategories = async () => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query('SELECT * FROM Categories')
+
+    return data.recordset;
+  } catch (err) {
+    console.log("Error from getAllCategories:" + err);
+  }
+};
 
 const addUser = async (user) => {
 
@@ -166,5 +252,7 @@ module.exports = {
   setRefreshToken,
   getRefreshToken,
   deleteRefreshToken,
-
+  getAllBooksAdmin,
+  addBook,
+  getAllCategories,
 };

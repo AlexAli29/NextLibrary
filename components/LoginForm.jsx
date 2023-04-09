@@ -7,11 +7,13 @@ import { useDispatch } from "react-redux"
 import { setToken } from "@/slices/tokenSlice"
 import { setUserData } from "@/slices/userSlice";
 import GoogleIcon from "./ui/GoogleIcon"
+import { useState } from "react"
 
 export const LoginForm = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const [error, setError] = useState();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
@@ -19,17 +21,24 @@ export const LoginForm = () => {
   const [getUser, { isLoading: userLoading }] = useGetUserMutation();
 
   const onSubmit = async (data) => {
+
     const { Name: userName, password } = data;
-    debugger
+
     try {
 
-      const { data } = await loginUser({ userName, password });
-      debugger
-      if (data.status == 409) {
+      const { data, error } = await loginUser({ userName, password });
 
+      if (error?.status == 404) {
+        setError(error.data.msg)
+        debugger
+      }
+      if (error?.status == 403) {
+        setError(error.data.msg)
       }
 
-      if (data.status == 200) {
+
+      if (!error) {
+        setError('');
         const { accessToken } = data;
 
         dispatch(setToken(accessToken));
@@ -51,24 +60,27 @@ export const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="">
-        <input  {...register('Name', {
+        <input {...register('Name', {
           required: "User Name is required field"
         })} className=" w-full text-sm  px-4 py-3 bg-slate-50 focus:bg-white border  border-gray-200 rounded-lg focus:outline-none focus:border-red-300" type="" placeholder="User Name" />
         {errors?.Name && (
           <div className="text-xs text-red-600 pl-6 pt-1 ">{errors.Name.message}</div>
         )}
+
       </div>
 
 
       <div className="relative" >
-        <input  {...register('password', {
+        <input type="password"  {...register('password', {
           required: "Password is required field"
-        })} placeholder="Password" className="text-sm text-gray-200 px-4 py-3 rounded-lg w-full bg-slate-50 focus:bg-white border border border-gray-200 focus:outline-none focus:border-red-300" />
+        })} placeholder="Password" className="text-sm  px-4 py-3 rounded-lg w-full bg-slate-50 focus:bg-white border border border-gray-200 focus:outline-none focus:border-red-300" />
         {errors?.password && (
           <div className="text-xs text-red-600 pl-6 pt-1 ">{errors.password.message}</div>
         )}
+
       </div>
 
+      {error ? <div className="text-base flex ml-16 text-red-600 pl-6 pt-1 ">{error}</div> : null}
 
       <div className="flex items-center justify-between">
 
@@ -90,12 +102,12 @@ export const LoginForm = () => {
       </div>
       <div className="flex justify-center gap-5 w-full ">
 
-        <button type="submit" className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500">
+        <button className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500">
           <GoogleIcon />
           <span>Google</span>
         </button>
 
-        <button type="submit" className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500 px-" >
+        <button className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500 px-" >
           Telegram
         </button>
 

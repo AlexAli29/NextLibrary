@@ -10,47 +10,54 @@ import { setToken } from '@/slices/tokenSlice';
 import UserDropDown from './ui/UserDropDown';
 import { usePathname } from 'next/navigation';
 import SearchInput from './ui/SearchInput';
+import HeaderLoader from './ui/HeaderLoader';
 
 
 export const Header = () => {
+  const [loadingUser, setLoadingUser] = useState(true);
   const router = useRouter();
   const [navActive, setNavActive] = useState(false);
-
-
   const dispatch = useDispatch();
   const userDataFromSlice = useSelector(selectUserData)
   const [user, setUser] = useState(userDataFromSlice);
-  const [refresh, { isLoading }] = useRefreshMutation();
+  const [refresh] = useRefreshMutation();
   const pathname = usePathname();
-  const [getUser, { isLoading: userLoading }] = useGetUserMutation();
+  const [getUser] = useGetUserMutation();
 
   useEffect(() => { setUser(userDataFromSlice) }, [userDataFromSlice]);
 
-  const handleRefresh = async () => {
-    const { data } = await refresh();
+  useEffect(() => {
 
-    if (data?.status == 200) {
-      const { accessToken } = data;
+    const handleRefresh = async () => {
+      const { data, error } = await refresh();
 
-      dispatch(setToken(accessToken));
-
-      const { data: userDataRes } = await getUser();
-
-
-      const { userData: User } = userDataRes;
-      console.log('rr' + User)
-
-      dispatch(setUserData(User));
-      setUser(User)
-    } else {
-      if (pathname != '/') {
-        router.push("/login");
+      if (error) {
+        setLoadingUser(false);
       }
 
-    }
-  };
+      if (!error) {
 
-  useEffect(() => {
+        const { accessToken } = data;
+
+        dispatch(setToken(accessToken));
+
+        const { data: userDataRes } = await getUser();
+
+
+        const { userData: User } = userDataRes;
+
+        setUser(User)
+        dispatch(setUserData(User));
+        setLoadingUser(false);
+
+      } else {
+        if (pathname != '/') {
+          router.push("/login");
+        }
+
+      }
+    };
+
     handleRefresh();
 
   }, []);
@@ -75,11 +82,9 @@ export const Header = () => {
     };
   }, [setNavActive]);
 
-
-
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <header onScroll={handleClickAway} className={`sticky top-0 z-50 flex  ${navActive ? 'h-[9rem]' : 'h-[4.5rem]'} justify-center   bg-gradient-to-r bg-red-100 shadow-sm  from-orange-100 
+      <header onScroll={handleClickAway} className={`sticky top-0 z-[1000] flex  ${navActive ? 'h-[9rem]' : 'h-[4.5rem]'} justify-center   bg-gradient-to-r bg-red-100 shadow-sm  from-orange-100 
     font-montserrat items-center`}>
 
         <Link className='absolute left-[-16px] md:left-10' href='/'>
@@ -93,15 +98,14 @@ export const Header = () => {
         </div>
 
         <div className='absolute right-2 md:right-11'>
-          {(!user.userName || isLoading) ? (
-            <Link href='/login'><button className=' bg-red-300 drop-shadow-md text-[12px] md:text-[16px]  text-slate-100 p-1 px-2  md:p-1 md:px-3 shadow-2xl rounded-lg hover:scale-[104%] ease-in-out transition-all  '>
-              Login
-            </button>
-            </Link>
-          ) : (
-            <UserDropDown user={user} />
-          )}
+          {loadingUser ? (
+            <HeaderLoader />
+          ) : ((user.userName ? <UserDropDown user={user} /> : <Link href='/login'><button className=' bg-red-300 drop-shadow-md text-[12px] md:text-[16px]  text-slate-100 p-1 px-2  md:p-1 md:px-3 shadow-2xl rounded-lg hover:scale-[104%] ease-in-out transition-all  '>
+            Login
+          </button>
+          </Link>))}
         </div>
+
       </header >
     </ClickAwayListener >
   )

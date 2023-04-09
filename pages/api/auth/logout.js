@@ -23,9 +23,9 @@ export default async function logout(req, res) {
       //   })
 
       deleteCookie("refresh-token", { req, res });
-      return res.json({ status: 200 });
+      return res.status(200).json({});
     } catch (err) {
-      return res.json({ status: 500, msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   }
 }

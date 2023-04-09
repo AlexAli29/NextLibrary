@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
       */}
       <head />
       <body>
-        <main className={`${montserrat.variable} ${lora.variable}`}>
+        <main className={`${montserrat.variable} ${lora.variable}  relative h-[100vh]`}>
 
           <Providers>
             <Header />

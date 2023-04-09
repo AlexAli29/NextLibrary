@@ -27,13 +27,13 @@ export const RegisterForm = () => {
 
     try {
 
-      const { data } = await registerUser({ userName, userEmail, password });
+      const { data, error } = await registerUser({ userName, userEmail, password });
 
-      if (data.status == 409) {
-        setError(data.msg);
+      if (error?.status == 409) {
+        setError(error.data.msg);
       }
 
-      if (data.status == 200) {
+      if (!error) {
         const { accessToken } = data;
 
         dispatch(setToken(accessToken));

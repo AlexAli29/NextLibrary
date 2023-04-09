@@ -9,19 +9,28 @@ export default async function login(req, res) {
 
       const username = req.body.userName;
       const password = req.body.password;
-      console.log('fhfhfhfh')
+
+
+      const data = await getUserByName(username);
+
+      console.log(JSON.stringify(data))
+
+      if (data.length == 0) {
+        return res.status(404).json({ msg: 'User not found' }).end();
+      }
+
 
       const [{ userId,
         userName,
         userEmail,
         userImage,
         passwordHash,
-        roleName }] = await getUserByName(username);
+        roleName }] = data
 
 
       const isVerifid = await bcrypt.compare(password, passwordHash);
 
-      if (!isVerifid) return res.status(403).end();
+      if (!isVerifid) return res.status(403).json({ msg: 'Wrong Password' }).end();
 
       await deleteRefreshToken(userId);
 
@@ -49,9 +58,9 @@ export default async function login(req, res) {
 
       });
 
-      return res.json({ status: 200, accessToken });
+      return res.status(200).json({ accessToken });
     } catch (err) {
-      return res.json({ status: 500, msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   }
 }

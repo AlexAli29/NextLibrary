@@ -52,6 +52,13 @@ export const reqHandler = apiSlice.injectEndpoints({
     }),
 
 
+    getCategories: build.mutation({
+      query: () => ({
+        url: "api/categories/getcategories",
+        method: "GET",
+      }),
+    }),
+
   }),
 });
 
@@ -63,5 +70,6 @@ export const {
   useGetUserMutation,
   useRefreshMutation,
   useLogoutMutation,
+  useGetCategoriesMutation,
 
 } = reqHandler;

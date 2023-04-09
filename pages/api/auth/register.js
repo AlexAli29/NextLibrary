@@ -16,10 +16,10 @@ export default async function register(req, res) {
 
 
       if (userByName.length) {
-        return res.json({ status: 409, msg: 'This name is already taken' });
+        return res.status(409).json({ msg: 'This name is already taken' });
       }
       if (userByEmail.length) {
-        return res.json({ status: 409, msg: 'This email is already taken' });
+        return res.status(409).json({ msg: 'This email is already taken' });
       }
 
       const user = {
@@ -53,10 +53,10 @@ export default async function register(req, res) {
       setRefreshToken(userId, refreshToken);
       setCookie('refresh-token', refreshToken, { req, res, httpOnly: 'true', });
 
-      return res.json({ status: 200, accessToken });
+      return res.status(200).json({ accessToken });
 
     } catch (err) {
-      return res.json({ status: 500, msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   }
 }

@@ -11,7 +11,7 @@ export default async function refresh(req, res) {
         res,
         httpOnly: true,
       });
-      if (!refreshToken_cookie) return res.json({ status: 401 });
+      if (!refreshToken_cookie) return res.status(401).json({ error: 'Unauthorized' });
       jwt.verify(
         refreshToken_cookie,
         process.env.REFRESH_TOKEN_SECRET,
@@ -52,11 +52,11 @@ export default async function refresh(req, res) {
             process.env.ACCESS_TOKEN_SECRET
           );
 
-          return res.json({ status: 200, accessToken });
+          return res.status(200).json({ accessToken });
         }
       );
     } catch (err) {
-      return res.json({ status: 500, msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   }
 }

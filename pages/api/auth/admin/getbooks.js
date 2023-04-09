@@ -1,15 +1,15 @@
-import { getAllBooks } from "../../../db/dbOperations";
+import { getAllBooksAdmin } from "../../../../db/dbOperations";
 
 
 const getBooks = async (req, res) => {
   if (req.method == "GET") {
     try {
 
-      const data = await getAllBooks();
+      const data = await getAllBooksAdmin();
 
       return res.status(200).json({ data });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ err: err.message });
     }
   }
 };

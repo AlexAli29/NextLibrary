@@ -9,9 +9,9 @@ const getSortedBooks = async (req, res) => {
 
       const data = await getSearchedBooks(searchString, year, price);
 
-      return res.json({ status: 200, data });
+      return res.status(200).json({ data });
     } catch (err) {
-      return res.json({ status: 500, msg: err.message });
+      return res.status(500).json({ msg: err.message });
     }
   }
 };

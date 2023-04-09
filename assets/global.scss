@@ -6,6 +6,10 @@ html {
 	scroll-behavior: smooth !important;
 }
 
+body {
+	height: 100vh;
+}
+
 input[type="range"]::-webkit-slider-thumb {
 	pointer-events: auto;
 	width: 12px;
@@ -15,4 +19,18 @@ input[type="range"]::-webkit-slider-thumb {
 	@apply bg-orange-300;
 
 	/* @apply w-6 h-6 appearance-none pointer-events-auto; */
+}
+
+.add_book_modal {
+	-webkit-box-shadow: 2px 3px 0px 4000px rgba(34, 60, 80, 0.356);
+	-moz-box-shadow: 2px 3px 0px 4000px rgba(34, 60, 80, 0.356);
+	box-shadow: 2px 3px 0px 3000px rgba(34, 60, 80, 0.411);
+}
+
+.addbookinput {
+	@apply w-[100%] hover:scale-[102%] hover:shadow focus:scale-[104%] focus:shadow-md h-[2.2rem] rounded-md pl-2 outline-none transition-all;
+}
+
+.category-list-item {
+	@apply pl-[5.5rem] w-full hover:bg-slate-200 py-1;
 }

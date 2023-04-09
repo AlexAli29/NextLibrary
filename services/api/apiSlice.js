@@ -20,7 +20,7 @@ const baseQuery = fetchBaseQuery({
 const baseQuerWyithReauth = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
-  if (result?.data?.status == 403) {
+  if (result?.data?.status == 401) {
     const refreshToken = await baseQuery("api/auth/refresh", api, extraOptions);
 
     if (refreshToken?.data) {

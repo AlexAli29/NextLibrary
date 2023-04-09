@@ -36,7 +36,7 @@ export default function UserDropDown({ user }) {
     <>
       <  UserIcon onPress={handleClick} />
       <ClickAwayListener onClickAway={handleClickAway}>
-        <div className={`absolute z-10 bg-[rgba(211,173,92,0.18)] ${dropDownActive ? 'flex' : 'hidden'}  rounded-lg backdrop-blur-[10px] w-[10rem] h-[8rem] pt-2 flex flex-row justify-center  right-[.4rem] shadow-lg`}>
+        <div className={`absolute z-50 bg-[rgba(211,173,92,0.18)] ${dropDownActive ? 'flex' : 'hidden'}  rounded-lg backdrop-blur-[10px] w-[10rem] h-[8rem] pt-2 flex flex-row justify-center  right-[.4rem] shadow-lg`}>
           <ul className='flex flex-col items-center space-y-3 font-montserrat text-rose-800' >
             <li className='font-semibold text-lg'>{user.userName}</li>
             <Link href='/user-page'><li className='flex items-center'> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.1} stroke="currentColor" className="w-5 h-[1.2rem] mr-1">
