@@ -48,7 +48,7 @@ const addBook = async (book) => {
 
   try {
     const pool = await connect();
-
+    console.log('ff' + book)
     const result = await pool
       .request()
       .input('bookName', book.bookName)
@@ -57,24 +57,48 @@ const addBook = async (book) => {
       .input('bookAuthor', book.bookAuthor)
       .input('bookYear', book.bookYear)
       .input('bookDescription', book.bookDescription)
-      .input('bookImage', book.bookImage)
       .input('categoryId', book.categoryId)
-      .input('isArchived', book.isArchived)
+      .input('isArchived', false)
       .output('bookId', sql.Int)
       .query(`
-      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, bookImage, categoryId, isArchived)
+      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, categoryId, isArchived)
       OUTPUT inserted.bookId
-      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @bookImage, @categoryId, @isArchived)
+      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @categoryId, @isArchived)
     `);
 
-    const newBookId = result.recordset[0].userId;
+    const newBookId = result.recordset[0].bookId;
     return newBookId;
 
   } catch (err) {
 
-    console.log('Error from addUser: ' + err);
+    console.log('Error from addBook: ' + err);
   }
 }
+
+const addBookImage = async (dbImagePath, bookId) => {
+  console.log('ffjjjjjjjjjjjj', bookId)
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+
+      .input('bookImage', dbImagePath)
+      .output('bookId', sql.Int)
+      .query(`UPDATE Books 
+      SET bookImage = @bookImage 
+      OUTPUT INSERTED.bookId 
+      WHERE bookId = ${bookId}`);
+
+    const updatedBookId = result.recordset[0].bookId;
+    return updatedBookId;
+
+  } catch (err) {
+
+    console.log('Error from addBookImage: ' + err);
+  }
+}
+
 
 const updateBook = async (book) => {
 
@@ -94,18 +118,20 @@ const updateBook = async (book) => {
       .input('isArchived', book.isArchived)
       .output('bookId', sql.Int)
       .query(`
-      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived
-WHERE bookId = @bookId
+      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived 
+      OUTPUT INSERTED.bookId
+WHERE bookId = ${book.bookId}
     `);
 
-    const updatedBookId = result.recordset[0].userId;
+    const updatedBookId = result.recordset[0].bookId;
     return updatedBookId;
 
   } catch (err) {
 
-    console.log('Error from addUser: ' + err);
+    console.log('Error from updateBook: ' + err);
   }
 }
+
 
 const getAllCategories = async () => {
   try {
@@ -255,4 +281,6 @@ module.exports = {
   getAllBooksAdmin,
   addBook,
   getAllCategories,
+  updateBook,
+  addBookImage
 };

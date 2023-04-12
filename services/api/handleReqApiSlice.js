@@ -10,6 +10,22 @@ export const reqHandler = apiSlice.injectEndpoints({
       }),
     }),
 
+    addBook: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/admin/addbook",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+
+    addBookImage: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/admin/addbookimage",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+
     login: build.mutation({
       query: (credentials) => ({
         url: "api/auth/login",
@@ -71,5 +87,7 @@ export const {
   useRefreshMutation,
   useLogoutMutation,
   useGetCategoriesMutation,
+  useAddBookImageMutation,
+  useAddBookMutation
 
 } = reqHandler;
