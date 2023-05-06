@@ -20,7 +20,9 @@ export default async function Home({ searchParams }) {
 
   if (Object.keys(searchParams).length === 0) {
     const { data } = await getAllBooks();
+
     return <BooksGrid data={data} />;
+
   }
   else {
     const { searchString, year, price } = searchParams

@@ -9,7 +9,7 @@ export const OrderButton = ({ bookId }) => {
   }
 
   return (
-    <button onClick={clickHandler} className='absolute text-white hover:bg-orange-400 bottom-3 left-3 bg-orange-300 px-[.4rem] rounded-md'>
+    <button onClick={clickHandler} className='absolute text-white active:scale-95 hover:bg-orange-400 bottom-3 left-3 bg-orange-300 px-[.4rem] rounded-md'>
       Order
     </button>
   )

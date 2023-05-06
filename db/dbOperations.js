@@ -5,7 +5,11 @@ const getAllBooks = async () => {
   try {
     const pool = await connect();
 
-    const data = await pool.request().query('SELECT * FROM Books WHERE isArchived=0')
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount
+    FROM Books
+    JOIN Categories ON Categories.categoryId = Books.categoryId 
+    WHERE Books.isArchived=0
+    GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived, Books.bookRatesAmount`);
 
     return data.recordset;
   } catch (err) {
@@ -17,7 +21,9 @@ const getAllBooksAdmin = async () => {
   try {
     const pool = await connect();
 
-    const data = await pool.request().query('SELECT * FROM Books')
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount 
+    FROM Books
+    JOIN Categories ON Categories.categoryId = Books.categoryId GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived,Books.bookRatesAmount`);
 
     return data.recordset;
   } catch (err) {
@@ -36,7 +42,15 @@ const getSearchedBooks = async (searchString, year, price) => {
 
 
 
-    const data = await pool.request().query(`SELECT * FROM Books WHERE (bookName LIKE '%${searchString}%' OR bookAuthor LIKE '%${searchString}%') AND bookYear>=${yearArray[0]} AND bookYear <=${yearArray[1]} AND bookPrice>=${priceArray[0]} AND bookPrice <=${priceArray[1]}`);
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount
+    FROM Books
+    JOIN Categories ON Categories.categoryId = Books.categoryId 
+    WHERE (bookName LIKE '%${searchString}%' OR bookAuthor LIKE '%${searchString}%') AND bookYear>=${yearArray[0]} AND bookYear <=${yearArray[1]} AND bookPrice>=${priceArray[0]} AND bookPrice <=${priceArray[1]} AND Books.isArchived=0
+    GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived, Books.bookRatesAmount`);
+
+
+
+
 
     return data.recordset;
   } catch (err) {
@@ -59,11 +73,12 @@ const addBook = async (book) => {
       .input('bookDescription', book.bookDescription)
       .input('categoryId', book.categoryId)
       .input('isArchived', false)
+      .input('bookRatesAmount', 0)
       .output('bookId', sql.Int)
       .query(`
-      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, categoryId, isArchived)
+      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, categoryId, isArchived,bookRatesAmount)
       OUTPUT inserted.bookId
-      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @categoryId, @isArchived)
+      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @categoryId, @isArchived,@bookRatesAmount)
     `);
 
     const newBookId = result.recordset[0].bookId;
@@ -76,7 +91,7 @@ const addBook = async (book) => {
 }
 
 const addBookImage = async (dbImagePath, bookId) => {
-  console.log('ffjjjjjjjjjjjj', bookId)
+
   try {
     const pool = await connect();
 
@@ -99,6 +114,24 @@ const addBookImage = async (dbImagePath, bookId) => {
   }
 }
 
+const getBookById = async (bookId) => {
+
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived,Books.bookRatesAmount 
+    FROM Books
+    JOIN Categories ON Categories.categoryId = Books.categoryId
+    WHERE Books.bookId = ${bookId}`);
+
+    return data.recordset;
+
+  } catch (err) {
+
+    console.log('Error from getBookById: ' + err);
+  }
+}
+
 
 const updateBook = async (book) => {
 
@@ -116,9 +149,10 @@ const updateBook = async (book) => {
       .input('bookImage', book.bookImage)
       .input('categoryId', book.categoryId)
       .input('isArchived', book.isArchived)
+      .input('bookRatesAmount', book.bookRatesAmount)
       .output('bookId', sql.Int)
       .query(`
-      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived 
+      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived, bookRatesAmount = @bookRatesAmount 
       OUTPUT INSERTED.bookId
 WHERE bookId = ${book.bookId}
     `);
@@ -282,5 +316,6 @@ module.exports = {
   addBook,
   getAllCategories,
   updateBook,
-  addBookImage
+  addBookImage,
+  getBookById
 };

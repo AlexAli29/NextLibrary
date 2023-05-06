@@ -10,7 +10,7 @@ import { setToken } from '@/slices/tokenSlice';
 import UserDropDown from './ui/UserDropDown';
 import { usePathname } from 'next/navigation';
 import SearchInput from './ui/SearchInput';
-import HeaderLoader from './ui/HeaderLoader';
+import Loader from './ui/Loader';
 
 
 export const Header = () => {
@@ -99,7 +99,7 @@ export const Header = () => {
 
         <div className='absolute right-2 md:right-11'>
           {loadingUser ? (
-            <HeaderLoader />
+            <Loader style='w-6 h-6 mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300' />
           ) : ((user.userName ? <UserDropDown user={user} /> : <Link href='/login'><button className=' bg-red-300 drop-shadow-md text-[12px] md:text-[16px]  text-slate-100 p-1 px-2  md:p-1 md:px-3 shadow-2xl rounded-lg hover:scale-[104%] ease-in-out transition-all  '>
             Login
           </button>

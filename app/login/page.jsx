@@ -3,7 +3,7 @@ import Link from "next/link";
 
 
 export const metadata = {
-  title: 'login',
+  title: 'Login',
 };
 
 export default function LoginPage() {
