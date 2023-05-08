@@ -5,7 +5,7 @@ const getAllBooks = async () => {
   try {
     const pool = await connect();
 
-    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.bookRatesAmount
     FROM Books
     JOIN Categories ON Categories.categoryId = Books.categoryId 
     WHERE Books.isArchived=0
@@ -42,10 +42,36 @@ const getSearchedBooks = async (searchString, year, price) => {
 
 
 
-    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.bookRatesAmount
     FROM Books
     JOIN Categories ON Categories.categoryId = Books.categoryId 
     WHERE (bookName LIKE '%${searchString}%' OR bookAuthor LIKE '%${searchString}%') AND bookYear>=${yearArray[0]} AND bookYear <=${yearArray[1]} AND bookPrice>=${priceArray[0]} AND bookPrice <=${priceArray[1]} AND Books.isArchived=0
+    GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived, Books.bookRatesAmount`);
+
+
+
+
+
+    return data.recordset;
+  } catch (err) {
+    console.log('Error from getSearchedBooks: ' + err);
+  }
+};
+
+const getSearchedBooksAdmin = async (searchString, year, price) => {
+  try {
+    const pool = await connect();
+
+
+    const yearArray = year.split(',');
+    const priceArray = price.split(',');
+
+
+
+    const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount
+    FROM Books
+    JOIN Categories ON Categories.categoryId = Books.categoryId 
+    WHERE (bookName LIKE '%${searchString}%' OR bookAuthor LIKE '%${searchString}%') AND bookYear>=${yearArray[0]} AND bookYear <=${yearArray[1]} AND bookPrice>=${priceArray[0]} AND bookPrice <=${priceArray[1]}
     GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived, Books.bookRatesAmount`);
 
 
@@ -62,7 +88,7 @@ const addBook = async (book) => {
 
   try {
     const pool = await connect();
-    console.log('ff' + book)
+
     const result = await pool
       .request()
       .input('bookName', book.bookName)
@@ -148,11 +174,9 @@ const updateBook = async (book) => {
       .input('bookDescription', book.bookDescription)
       .input('bookImage', book.bookImage)
       .input('categoryId', book.categoryId)
-      .input('isArchived', book.isArchived)
-      .input('bookRatesAmount', book.bookRatesAmount)
       .output('bookId', sql.Int)
       .query(`
-      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId, isArchived = @isArchived, bookRatesAmount = @bookRatesAmount 
+      UPDATE Books SET bookName = @bookName, bookPrice = @bookPrice, bookRating = @bookRating, bookAuthor = @bookAuthor, bookYear = @bookYear, bookDescription = @bookDescription, bookImage = @bookImage, categoryId = @categoryId
       OUTPUT INSERTED.bookId
 WHERE bookId = ${book.bookId}
     `);
@@ -317,5 +341,6 @@ module.exports = {
   getAllCategories,
   updateBook,
   addBookImage,
-  getBookById
+  getBookById,
+  getSearchedBooksAdmin
 };

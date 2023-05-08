@@ -26,7 +26,7 @@ const addBooksImage = async (req, res) => {
           console.error(err);
           return res.status(500).end();
         }
-        console.log('mort1')
+
         const imageFile = files.Image;
         const bookId = fields.BookId;
         console.log('fields.BookId', fields.BookId)
@@ -36,7 +36,7 @@ const addBooksImage = async (req, res) => {
         // Write the image to the public directory
 
         const publicDir = path.join(process.cwd(), 'public/bookImages');
-        console.log('fffffffffff', publicDir)
+
         const imagePath = path.join(publicDir, imageFile.originalFilename);
         await fs.writeFile(imagePath, imageContent);
 

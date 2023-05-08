@@ -6,14 +6,15 @@ export async function middleware(req) {
   const refreshToken = req.cookies.get('refresh-token')?.value;
   const authHeader = req.headers["authorization"];
 
-  const accessToken = authHeader?.split(" ")[1];
-
 
 
   if ((req.nextUrl.pathname.startsWith('/login') || req.nextUrl.pathname.startsWith('/register')) && refreshToken) {
     return NextResponse.redirect(new URL('/', req.url))
   }
 
+  if ((req.nextUrl.pathname.startsWith('/user-page')) && !(refreshToken)) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
   // if ((req.nextUrl.pathname.startsWith('/api/auth/logout'))) {
   //   response.cookies.delete('refresh-token');
   //   return NextResponse.redirect(new URL('/login', req.url))
@@ -61,7 +62,7 @@ export async function middleware(req) {
 
 
 export const config = {
-  matcher: ['/api/auth/:path*', '/login', '/register']
+  matcher: ['/user-page', '/login', '/register']
 }
 
 

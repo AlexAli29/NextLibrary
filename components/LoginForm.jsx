@@ -1,20 +1,19 @@
 'use client'
 import Link from "next/link"
-import { useForm } from "react-hook-form"
-import { useLoginMutation, useGetUserMutation } from "@/services/api/handleReqApiSlice"
-import { useRouter } from "next/navigation"
-import { useDispatch } from "react-redux"
-import { setToken } from "@/slices/tokenSlice"
-import { setUserData } from "@/slices/userSlice";
+import { useForm } from "react-hook-form";
+import { useLoginMutation, useGetUserMutation } from "@/services/api/handleReqApiSlice";
+import { useRouter } from "next/navigation";
 import GoogleIcon from "./ui/GoogleIcon"
 import { useState } from "react"
+import { useActions } from "@/hooks/useActions";
 
 export const LoginForm = () => {
 
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const [error, setError] = useState();
 
+  const router = useRouter();
+
+  const { setToken, setUserData } = useActions()
+  const [error, setError] = useState();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const [loginUser, { isLoading }] = useLoginMutation();
@@ -41,10 +40,10 @@ export const LoginForm = () => {
         setError('');
         const { accessToken } = data;
 
-        dispatch(setToken(accessToken));
+        setToken(accessToken);
         const { data: userData } = await getUser();
         const { userData: user } = userData;
-        dispatch(setUserData(user));
+        setUserData(user);
         router.push('/');
         reset
 

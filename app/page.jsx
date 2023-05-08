@@ -31,22 +31,6 @@ export default async function Home({ searchParams }) {
 
     return <BooksGrid data={data} />;
   }
-
-
-
-  // const { searchString, year, price } = searchParams
-
-  // const decodedString = decodeURIComponent(searchString)
-
-  // const { data } = await getAllBooks();
-  // console.log('khkh  ' + searchString)
-
-  // return (
-
-  //   <BooksGrid data={data} />
-
-
-  // );
 }
 
 

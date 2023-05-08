@@ -2,7 +2,7 @@ import { Header } from '@/components/Header'
 import '../assets/global.scss';
 import { Montserrat, Lora } from 'next/font/google'
 import { Providers } from '@/components/Providers';
-
+import style from '@/dist/index.module.css'
 
 
 
@@ -22,14 +22,14 @@ const lora = Lora({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={style.html} >
       {/*
         <head /> will contain the components returned by the nearest parent
         head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body>
-        <main className={`${montserrat.variable} ${lora.variable}  relative h-[100vh]`}>
+      <body className='w-full'>
+        <main className={`${montserrat.variable} ${lora.variable} w-full relative h-[100vh]`}>
 
           <Providers>
             <Header />

@@ -10,6 +10,13 @@ export const reqHandler = apiSlice.injectEndpoints({
       }),
     }),
 
+    getBooksAdmin: build.mutation({
+      query: () => ({
+        url: "api/admin/book",
+        method: "GET",
+      }),
+    }),
+
     addBook: build.mutation({
       query: (credentials) => ({
         url: "api/auth/admin/book",
@@ -87,7 +94,7 @@ export const reqHandler = apiSlice.injectEndpoints({
 });
 
 export const {
-
+  useGetBooksAdminMutation,
   useLoginMutation,
   useRegisterMutation,
   useGetBooksMutation,

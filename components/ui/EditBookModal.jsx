@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react"
-import ClickAwayListener from "react-click-away-listener"
+
 import { useForm } from "react-hook-form";
 import CloseModalIcon from "./CloseModalIcon";
 import CategoriesDropDown from "./CategoriesDropDown";
@@ -14,13 +14,22 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   const router = useRouter();
   const [categoryError, setCategoryError] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
+
   const [fileName, setFileName] = useState();
   const [selectedFile, setSelectedFile] = useState();
   const [fileError, setFileError] = useState(false);
   const [editBook, { isLoading }] = useEditBookMutation();
   const [addBookImage, { isLoading: isImageLoading }] = useAddBookImageMutation();
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    defaultValues: {
+      bookName: book.bookName,
+      bookPrice: book.bookPrice,
+      bookAuthor: book.bookAuthor,
+      bookYear: book.bookYear,
+      bookDescription: book.bookDescription
+    }
+  });
 
   const handleFileInput = (e) => {
     const file = e.target.files[0];
@@ -30,36 +39,29 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   }
 
   const onSubmit = async (data) => {
-    debugger
-    if (!selectedCategory) {
 
+    if (!selectedCategory) {
       setCategoryError(true);
     }
-    if (!selectedFile) {
 
-      setFileError(true);
-    }
-    if (selectedCategory && selectedFile) {
+    if (selectedCategory) {
       setCategoryError(false);
-      setFileError(false);
       const { bookName, bookPrice, bookAuthor, bookYear, bookDescription } = data;
-      const formData = new FormData();
-      formData.append("Image", selectedFile);
-
 
       try {
-        const categoryId = selectedCategory.Id;
-
-
+        const categoryId = selectedCategory.categoryId;
         const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
-        debugger
-        console.log(BookId)
-        formData.append("BookId", BookId)
 
-        const data = await addBookImage(formData);
+        if (selectedFile) {
+          const formData = new FormData();
+          formData.append("Image", selectedFile);
+          formData.append("BookId", BookId)
+
+          const data = await addBookImage(formData);
+        }
         router.refresh();
         setModalActive(false);
-
+        reset()
       }
       catch (err) {
         console.log(err)
@@ -68,7 +70,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   }
 
   return (
-    <Dialog as='div' open={modalActive} onClose={() => setModalActive(false)} className={`flex p-2 items-center py-3  rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex-col pb-5 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
+    <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset() }} className={`flex p-2 items-center py-3  rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex-col pb-5 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
 
       <CloseModalIcon classes='w-5 h-5 absolute right-[1rem]' setModalActive={setModalActive} />
 
@@ -76,7 +78,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
         <span className="  text-red-700 font-medium text-2xl tracking-widest ">Edit Book</span>
       </Dialog.Title>
 
-      <Dialog.Panel>
+      <Dialog.Panel className='w-full'>
         <form className="flex flex-col space-y-6 w-[100%] items-center " onSubmit={handleSubmit(onSubmit)}>
 
           <div className="  flex w-[100%] space-x-6 px-8  ">
@@ -84,6 +86,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
               <div className=" relative flex flex-col w-[100%] items-center">
                 <input  {...register('bookName', {
                   required: "Book Name is required field"
+
                 })} className="addbookinput" type="text" placeholder="Name " />
                 {errors?.bookName && (
                   <div className=" absolute left-0 bottom-[-1.3rem] text-xs text-red-600 pl-6 pt-1 ">{errors.bookName.message}</div>
@@ -130,7 +133,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
 
 
           <div className="relative flex flex-col w-[45%] items-center">
-            <CategoriesDropDown selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} setCategoryError={setCategoryError} />
+            <CategoriesDropDown selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} setCategoryError={setCategoryError} book={book} />
             {categoryError ? (<div className="text-xs absolute left-0 bottom-[-1.3rem] text-red-600 pl-6 pt-1 ">Select book category</div>) : null}
           </div>
 
@@ -145,10 +148,10 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
               </div>
               <input onChange={handleFileInput} id="dropzone-file" type="file" className="hidden" />
             </label>
-            {fileError ? (<div className="text-xs absolute left-0 bottom-[-1.3rem] text-red-600 pl-6 pt-1 ">Choose image</div>) : null}
+
           </div>
 
-          {(isLoading || isImageLoading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Add</button>}
+          {(isLoading || isImageLoading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Edit</button>}
 
 
 

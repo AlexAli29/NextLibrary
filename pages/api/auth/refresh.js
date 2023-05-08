@@ -4,7 +4,7 @@ import { getRefreshToken } from '../../../db/dbOperations'
 
 export default async function refresh(req, res) {
   if (req.method == "GET") {
-    console.log()
+    
     try {
       const refreshToken_cookie = getCookie("refresh-token", {
         req,

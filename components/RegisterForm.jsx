@@ -1,24 +1,21 @@
 'use client'
-
-import Link from "next/link"
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { setToken } from "@/slices/tokenSlice";
-import { setUserData } from "@/slices/userSlice";
 import { useRegisterMutation, useGetUserMutation } from "@/services/api/handleReqApiSlice";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GoogleIcon from "./ui/GoogleIcon";
+import { useActions } from "@/hooks/useActions";
 
 export const RegisterForm = () => {
 
+  const { setToken, setUserData } = useActions();
   const router = useRouter();
   const [error, setError] = useState('');
   const [registerUser, { isLoading }] = useRegisterMutation();
 
   const [getUser, { isLoading: userLoading }] = useGetUserMutation();
 
-  const dispatch = useDispatch();
+
 
   const { register, handleSubmit, watch, formState: { errors }, reset, getValues } = useForm();
 
@@ -41,8 +38,8 @@ export const RegisterForm = () => {
         const { data: userData } = await getUser();
         const { userData: user } = userData;
 
-        console.log(user);
-        dispatch(setUserData(user));
+
+        setUserData(user);
         router.push('/');
         reset
 

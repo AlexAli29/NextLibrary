@@ -3,28 +3,27 @@ import { useRouter } from 'next/navigation';
 import ClickAwayListener from 'react-click-away-listener';
 import Link from 'next/link'
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUserData, setUserData } from '@/slices/userSlice';
 import { useRefreshMutation, useGetUserMutation } from '@/services/api/handleReqApiSlice';
-import { setToken } from '@/slices/tokenSlice';
 import UserDropDown from './ui/UserDropDown';
 import { usePathname } from 'next/navigation';
 import SearchInput from './ui/SearchInput';
 import Loader from './ui/Loader';
+import { useActions } from '@/hooks/useActions';
+import { useUser } from '@/hooks/useUser';
 
 
 export const Header = () => {
   const [loadingUser, setLoadingUser] = useState(true);
   const router = useRouter();
   const [navActive, setNavActive] = useState(false);
-  const dispatch = useDispatch();
-  const userDataFromSlice = useSelector(selectUserData)
-  const [user, setUser] = useState(userDataFromSlice);
+
+  const user = useUser();
   const [refresh] = useRefreshMutation();
   const pathname = usePathname();
   const [getUser] = useGetUserMutation();
+  const { setToken, setUserData } = useActions();
 
-  useEffect(() => { setUser(userDataFromSlice) }, [userDataFromSlice]);
+
 
   useEffect(() => {
 
@@ -39,21 +38,16 @@ export const Header = () => {
 
         const { accessToken } = data;
 
-        dispatch(setToken(accessToken));
+        setToken(accessToken);
 
         const { data: userDataRes } = await getUser();
 
 
         const { userData: User } = userDataRes;
 
-        setUser(User)
-        dispatch(setUserData(User));
-        setLoadingUser(false);
 
-      } else {
-        if (pathname != '/') {
-          router.push("/login");
-        }
+        setUserData(User);
+        setLoadingUser(false);
 
       }
     };
@@ -84,7 +78,7 @@ export const Header = () => {
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
-      <header onScroll={handleClickAway} className={`sticky top-0 z-[1000] flex  ${navActive ? 'h-[9rem]' : 'h-[4.5rem]'} justify-center   bg-gradient-to-r bg-red-100 shadow-sm  from-orange-100 
+      <header onScroll={handleClickAway} className={`sticky top-0 z-[1000] flex  ${navActive ? 'h-[9rem]' : 'h-[4.5rem]'} justify-center w-full right-0 left-0 bg-gradient-to-r bg-red-100 shadow-sm  from-orange-100
     font-montserrat items-center`}>
 
         <Link className='absolute left-[-16px] md:left-10' href='/'>

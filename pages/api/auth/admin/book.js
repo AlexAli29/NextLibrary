@@ -20,12 +20,13 @@ const AdminBooks = async (req, res) => {
   }
 
   if (req.method == "PATCH") {
+
     try {
 
 
-      const { bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId } = req.body;
-
-      const BookId = await updateBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
+      const { bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId } = req.body;
+      console.log('im here')
+      const BookId = await updateBook({ bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
 
       return res.status(200).json(BookId);
     } catch (err) {

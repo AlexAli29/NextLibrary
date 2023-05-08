@@ -1,19 +1,16 @@
 'use client'
-
 import React, { useState } from 'react'
 import UserIcon from './UserIcon'
 import ClickAwayListener from 'react-click-away-listener'
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
-import { logOut } from '@/slices/tokenSlice';
 import { useLogoutMutation } from '@/services/api/handleReqApiSlice';
-import { removeUserData } from '@/slices/userSlice';
-
-
+import { useActions } from '@/hooks/useActions';
+import { useRouter } from 'next/navigation';
 
 export default function UserDropDown({ user }) {
 
-  const dispatch = useDispatch();
+  const router = useRouter();
+  const { logOut, removeUserData } = useActions();
   const [dropDownActive, setDropDownActive] = useState(false);
   const [logout] = useLogoutMutation();
 
@@ -26,10 +23,10 @@ export default function UserDropDown({ user }) {
   }
 
   const handleLogout = async () => {
-    dispatch(logOut());
-    dispatch(removeUserData())
     await logout();
-
+    logOut();
+    removeUserData();
+    router.push('/');
   }
 
   return (

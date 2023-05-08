@@ -34,7 +34,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUserData, removeUserData } = userSlice.actions;
+export const { actions } = userSlice;
 
 export const selectUserData = (state) => state.user;
 

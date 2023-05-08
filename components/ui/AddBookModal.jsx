@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useState } from "react"
-import ClickAwayListener from "react-click-away-listener"
+
 import { useForm } from "react-hook-form";
 import CloseModalIcon from "./CloseModalIcon";
 import CategoriesDropDown from "./CategoriesDropDown";
@@ -30,13 +30,13 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
   }
 
   const onSubmit = async (data) => {
-    debugger
+
     if (!selectedCategory) {
 
       setCategoryError(true);
     }
     if (!selectedFile) {
-      console.log('ggg')
+
       setFileError(true);
     }
     if (selectedCategory && selectedFile) {
@@ -52,14 +52,14 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
 
 
         const { data: BookId } = await addBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
-        debugger
-        console.log(BookId)
+
+
         formData.append("BookId", BookId)
 
         const data = await addBookImage(formData);
         router.refresh();
         setModalActive(false);
-
+        reset();
       }
       catch (err) {
         console.log(err)
@@ -77,13 +77,13 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
       as={Fragment}>
-      <Dialog as='div' open={modalActive} onClose={() => setModalActive(false)} className={`flex p-2 items-center py-3  rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex-col pb-5 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
+      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset(); }} className={`flex pt-2 items-center   rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex-col pb-3 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
 
         <CloseModalIcon classes='w-5 h-5 absolute right-[1rem]' setModalActive={setModalActive} />
 
-        <div className="mb-6">
-          <Dialog.Title className="  text-red-700 font-medium text-2xl tracking-widest ">Add Book</Dialog.Title>
-        </div>
+        <Dialog.Panel className="mb-6 w-full ">
+          <span className="text-red-700 font-medium text-2xl w-full flex justify-center  tracking-widest ">Add Book</span>
+        </Dialog.Panel>
         <Dialog.Panel className='w-full'>
           <form className="flex flex-col space-y-6 w-[100%] items-center " onSubmit={handleSubmit(onSubmit)}>
 
