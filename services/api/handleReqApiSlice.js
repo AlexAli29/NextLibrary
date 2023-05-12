@@ -10,6 +10,21 @@ export const reqHandler = apiSlice.injectEndpoints({
       }),
     }),
 
+    getArchivedBooks: build.mutation({
+      query: () => ({
+        url: "api/auth/admin/archive",
+        method: "GET",
+      }),
+    }),
+
+    toggleArchive: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/admin/archive",
+        method: "PATCH",
+        body: credentials,
+      }),
+    }),
+
     getBooksAdmin: build.mutation({
       query: () => ({
         url: "api/admin/book",
@@ -105,5 +120,7 @@ export const {
   useAddBookImageMutation,
   useAddBookMutation,
   useEditBookMutation,
+  useGetArchivedBooksMutation,
+  useToggleArchiveMutation,
 
 } = reqHandler;

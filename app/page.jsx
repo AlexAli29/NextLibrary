@@ -1,20 +1,15 @@
-
 import BooksGrid from "@/components/BooksGrid";
 import getAllBooks from "@/lib/getAllBooks";
 import getSortedBooks from "@/lib/getSortedBooks";
 
 
-
 export const metadata = {
   content: "width=device-width, initial-scale=1",
-  title: 'Home',
-  description: 'Welcome to Next.js',
+  title: 'Catalog',
+  description: 'Welcome to mort book',
   charset: 'utf-8'
 
 };
-
-
-
 
 export default async function Home({ searchParams }) {
 

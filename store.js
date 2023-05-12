@@ -3,13 +3,14 @@ import tokenSlice from "./slices/tokenSlice";
 import userSlice from "./slices/userSlice";
 import bookSlice from "./slices/bookSlice";
 import { apiSlice } from "./services/api/apiSlice";
+import archiveSlice from "./slices/archiveSlice";
 
 export const store = configureStore({
 
   reducer: {
 
     [apiSlice.reducerPath]: apiSlice.reducer,
-
+    archive: archiveSlice,
     token: tokenSlice,
     user: userSlice,
     book: bookSlice,

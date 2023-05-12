@@ -15,7 +15,7 @@ export default function RegisterPage() {
           <h3 className="font-semibold text-[2.5rem] text-gray-800">Sign Up </h3>
           <p className="text-gray-400">Already have an account?
             <Link href="/login"
-              className="text-sm text-red-400 hover:text-red-600">Sign In</Link>
+              className="text-sm text-red-400 hover:text-red-600"> Sign In</Link>
           </p>
         </div>
         <RegisterForm />

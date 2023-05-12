@@ -4,7 +4,7 @@ import { getRefreshToken } from '../../../db/dbOperations'
 
 export default async function refresh(req, res) {
   if (req.method == "GET") {
-    
+
     try {
       const refreshToken_cookie = getCookie("refresh-token", {
         req,
@@ -21,10 +21,6 @@ export default async function refresh(req, res) {
           console.log('fffb' + userId)
           // get refresh token from database
           const [{ refreshToken, creationDate, expireDate, }] = await getRefreshToken(userId);
-
-
-
-
           const date_db = expireDate.toISOString().split("T")[0];
           const time_db = expireDate.toISOString().split("T")[1];
           const hours = time_db.split(":")[0];

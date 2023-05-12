@@ -17,13 +17,15 @@ const getAllBooks = async () => {
   }
 };
 
-const getAllBooksAdmin = async () => {
+const getArchivedBooks = async () => {
   try {
     const pool = await connect();
 
     const data = await pool.request().query(`SELECT Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName,Books.isArchived,Books.bookRatesAmount 
     FROM Books
-    JOIN Categories ON Categories.categoryId = Books.categoryId GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived,Books.bookRatesAmount`);
+    JOIN Categories ON Categories.categoryId = Books.categoryId
+    WHERE Books.isArchived=1
+    GROUP BY Books.bookId, Books.bookName, Books.bookPrice, Books.bookRating, Books.bookAuthor, Books.bookYear, Books.bookDescription, Books.bookImage, Categories.categoryName, Books.isArchived,Books.bookRatesAmount`);
 
     return data.recordset;
   } catch (err) {
@@ -190,6 +192,30 @@ WHERE bookId = ${book.bookId}
   }
 }
 
+const archiveBook = async (bookId, status) => {
+
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+      .input('isArchived', status)
+      .output('bookId', sql.Int)
+      .query(`
+      UPDATE Books SET isArchived = @isArchived
+      OUTPUT INSERTED.bookId
+      WHERE bookId = ${bookId}
+    `);
+
+    const updatedBookId = result.recordset[0].bookId;
+    return updatedBookId;
+
+  } catch (err) {
+
+    console.log('Error from archiveBook: ' + err);
+  }
+}
+
 
 const getAllCategories = async () => {
   try {
@@ -336,11 +362,12 @@ module.exports = {
   setRefreshToken,
   getRefreshToken,
   deleteRefreshToken,
-  getAllBooksAdmin,
+  getArchivedBooks,
   addBook,
   getAllCategories,
   updateBook,
   addBookImage,
   getBookById,
-  getSearchedBooksAdmin
+  getSearchedBooksAdmin,
+  archiveBook
 };

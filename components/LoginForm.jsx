@@ -81,14 +81,7 @@ export const LoginForm = () => {
 
       {error ? <div className="text-base flex ml-16 text-red-600 pl-6 pt-1 ">{error}</div> : null}
 
-      <div className="flex items-center justify-between">
 
-        <div className="text-sm ml-auto">
-          <Link href="#" className="text-red-400 hover:text-red-500">
-            Forgot your password?
-          </Link>
-        </div>
-      </div>
       <div>
         <button type="submit" className="w-full flex justify-center bg-red-400 text-gray-100 p-3  rounded-lg tracking-wide font-semibold  cursor-pointer transition ease-in duration-500">
           Sign in
@@ -99,18 +92,7 @@ export const LoginForm = () => {
         <span className="text-gray-300 font-normal">or</span>
         <span className="h-px w-16 bg-gray-100"></span>
       </div>
-      <div className="flex justify-center gap-5 w-full ">
 
-        <button className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500">
-          <GoogleIcon />
-          <span>Google</span>
-        </button>
-
-        <button className="w-full flex items-center justify-center mb-6 md:mb-0 border border-gray-300 hover:border-gray-900 hover:bg-gray-900 text-sm text-gray-500 p-3  rounded-lg tracking-wide font-medium  cursor-pointer transition ease-in duration-500 px-" >
-          Telegram
-        </button>
-
-      </div>
     </form  >
   )
 }

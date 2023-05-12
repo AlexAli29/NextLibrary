@@ -3,11 +3,12 @@ import { useState } from "react"
 
 import { useForm } from "react-hook-form";
 import CloseModalIcon from "./CloseModalIcon";
-import CategoriesDropDown from "./CategoriesDropDown";
+
 import { useAddBookImageMutation, useEditBookMutation } from "@/services/api/handleReqApiSlice";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/ui/Loader";
 import { Dialog } from "@headlessui/react";
+import EditCategoriesDropDown from "./EditCategoriesDropdown";
 
 export default function EditBookModal({ modalActive = false, setModalActive, book }) {
 
@@ -22,7 +23,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   const [addBookImage, { isLoading: isImageLoading }] = useAddBookImageMutation();
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    defaultValues: {
+    values: {
       bookName: book.bookName,
       bookPrice: book.bookPrice,
       bookAuthor: book.bookAuthor,
@@ -49,8 +50,8 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
       const { bookName, bookPrice, bookAuthor, bookYear, bookDescription } = data;
 
       try {
-        const categoryId = selectedCategory.categoryId;
-        const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
+        const categoryId = selectedCategory.Id;
+        const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage: book.bookImage, categoryId });
 
         if (selectedFile) {
           const formData = new FormData();
@@ -133,7 +134,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
 
 
           <div className="relative flex flex-col w-[45%] items-center">
-            <CategoriesDropDown selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} setCategoryError={setCategoryError} book={book} />
+            <EditCategoriesDropDown selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} setCategoryError={setCategoryError} book={book} />
             {categoryError ? (<div className="text-xs absolute left-0 bottom-[-1.3rem] text-red-600 pl-6 pt-1 ">Select book category</div>) : null}
           </div>
 

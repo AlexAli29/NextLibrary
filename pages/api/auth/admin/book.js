@@ -1,5 +1,5 @@
 import { addBook } from "../../../../db/dbOperations";
-import { getAllBooksAdmin, updateBook } from "../../../../db/dbOperations";
+import { updateBook } from "../../../../db/dbOperations";
 
 
 const AdminBooks = async (req, res) => {
@@ -24,24 +24,13 @@ const AdminBooks = async (req, res) => {
     try {
 
 
-      const { bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId } = req.body;
+      const { bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId } = req.body;
       console.log('im here')
-      const BookId = await updateBook({ bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
+      const BookId = await updateBook({ bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId });
 
       return res.status(200).json(BookId);
     } catch (err) {
       console.log(err)
-      return res.status(500).json({ err: err.message });
-    }
-  }
-
-  if (req.method == "GET") {
-    try {
-
-      const data = await getAllBooksAdmin();
-
-      return res.status(200).json({ data });
-    } catch (err) {
       return res.status(500).json({ err: err.message });
     }
   }

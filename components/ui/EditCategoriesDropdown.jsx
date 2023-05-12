@@ -6,7 +6,7 @@ import { useGetCategoriesMutation } from "@/services/api/handleReqApiSlice";
 
 
 
-export default function CategoriesDropDown({ selectedCategory, setSelectedCategory, setCategoryError }) {
+export default function EditCategoriesDropDown({ selectedCategory, setSelectedCategory, setCategoryError, book }) {
 
   const [categories, setCategories] = useState();
   const [getCategories, { isLoading }] = useGetCategoriesMutation()
@@ -15,7 +15,6 @@ export default function CategoriesDropDown({ selectedCategory, setSelectedCatego
   useEffect(() => {
     const fetchCategories = async () => {
       const { data } = await getCategories();
-
       setCategories(data);
     }
 
@@ -24,7 +23,11 @@ export default function CategoriesDropDown({ selectedCategory, setSelectedCatego
 
   }, [])
 
+  useEffect(() => {
+    const matchingCategory = categories?.find((b) => b.categoryName === book?.categoryName);
+    setSelectedCategory({ Id: matchingCategory?.categoryId, Name: matchingCategory?.categoryName });
 
+  }, [categories]);
 
   function handleClick() {
     if (isOpened == true) {
@@ -59,5 +62,3 @@ export default function CategoriesDropDown({ selectedCategory, setSelectedCatego
     </ClickAwayListener>
   )
 }
-
-

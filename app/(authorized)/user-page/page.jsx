@@ -2,13 +2,14 @@
 import { useActions } from '@/hooks/useActions';
 import { useUser } from '@/hooks/useUser'
 import { useLogoutMutation } from '@/services/api/handleReqApiSlice';
+import { Tab } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
-import React from 'react'
 
 
 
 
 export default function UserProfile() {
+
 
   const { logOut, removeUserData } = useActions()
   const user = useUser();
@@ -66,10 +67,19 @@ export default function UserProfile() {
                   {user?.userEmail}
                 </div>
               </div>
-              <div class="mt-2 py-10 border-t border-blueGray-200 text-center">
+              <div class="mt-2 py-2 border-t border-blueGray-200 text-center">
                 <div class="flex flex-wrap justify-center">
-                  <div class="w-full lg:w-9/12 px-4 text-[1.6rem]">
-                    Your Books
+                  <div class="w-full lg:w-9/12 px-4 text-[1.4rem] flex flex-col items-center">
+                    <Tab.Group>
+                      <Tab.List className='bg-gray-200 w-fit px-1 py-1 rounded-lg  flex justify-center space-x-1'>
+                        <Tab className=' px-3 rounded-lg  focus:outline-none  ui-selected:bg-red-400 ui-selected:text-white '>Books</Tab>
+                        <Tab className='px-3 rounded-lg ui-selected:bg-red-400 ui-selected:text-white focus:outline-none'>Orders</Tab>
+                      </Tab.List>
+                      <Tab.Panels>
+                        <Tab.Panel>Book list</Tab.Panel>
+                        <Tab.Panel>Orders list</Tab.Panel>
+                      </Tab.Panels>
+                    </Tab.Group>
                   </div>
                 </div>
               </div>

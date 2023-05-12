@@ -28,8 +28,8 @@ export default function RootLayout({ children }) {
         head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
       */}
       <head />
-      <body className='w-full'>
-        <main className={`${montserrat.variable} ${lora.variable} w-full relative h-[100vh]`}>
+      <body className='w-full h-full'>
+        <main className={`${montserrat.variable} ${lora.variable} w-full relative h-full`}>
 
           <Providers>
             <Header />
