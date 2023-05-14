@@ -3,12 +3,45 @@ import Image from 'next/image';
 import BookImage from '../public/book.jpg';
 import { useState } from 'react';
 import ReactStars from 'react-stars';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/hooks/useUser';
+import { useAddOrderMutation } from '@/services/api/handleReqApiSlice';
+import { useToast } from '@chakra-ui/react';
 
 
 export default function BookInfo({ book }) {
   const [bookRating, setBookRating] = useState(book.bookRating);
   const [bookRatesAmount, setBookRatesAmount] = useState(book.bookRatesAmount)
-
+  const router = useRouter();
+  const user = useUser();
+  const [addOrder] = useAddOrderMutation();
+  const toast = useToast();
+  async function clickHandler(e) {
+    e.preventDefault()
+    if (!user.roleName) {
+      router.push('/login')
+      return
+    }
+    const response = await addOrder({ bookId: book.bookId })
+    if (response.error) {
+      toast({
+        title: `${response.error.data.message}`,
+        status: 'error',
+        duration: 1500,
+        isClosable: true,
+        position: 'bottom'
+      })
+    }
+    else {
+      toast({
+        title: `Book ordered`,
+        status: 'success',
+        duration: 1500,
+        isClosable: true,
+        position: 'bottom'
+      })
+    }
+  }
 
 
   const ratingChanged = (newRating) => {
@@ -33,6 +66,7 @@ export default function BookInfo({ book }) {
           <div>
             <p className='pt-4'>{book?.bookAuthor}, {book?.bookYear}</p>
           </div>
+          <div><p className='text-[1rem] opacity-90'>{book?.categoryName}</p></div>
           <span className='flex items-center'> <ReactStars
             count={5}
             onChange={ratingChanged}
@@ -49,7 +83,9 @@ export default function BookInfo({ book }) {
             </span>
           </span>
           <div className='py-5'>
-            <button className='bg-rose-400 text-white tracking-wider text-lg w-24 h-9 rounded-lg hover:scale-105 active:scale-95 transition-all ease-in-out'>Order</button>
+            <>
+              {user.roleName == "Admin" ? null : <button onClick={clickHandler} className='bg-rose-400 text-white tracking-wider text-lg w-24 h-9 rounded-lg hover:scale-105 active:scale-95 transition-all ease-in-out'>Order</button>}
+            </>
           </div>
           <div className='mt-3'>
             <p className='text-lg font-medium'>Description</p>

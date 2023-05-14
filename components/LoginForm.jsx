@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import GoogleIcon from "./ui/GoogleIcon"
 import { useState } from "react"
 import { useActions } from "@/hooks/useActions";
+import { useToast } from "@chakra-ui/react";
 
 export const LoginForm = () => {
 
 
   const router = useRouter();
-
+  const toast = useToast();
   const { setToken, setUserData } = useActions()
   const [error, setError] = useState();
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
@@ -45,6 +46,14 @@ export const LoginForm = () => {
         const { userData: user } = userData;
         setUserData(user);
         router.push('/');
+        toast({
+          title: `Welcome ${user.userName}`,
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+          position: 'bottom'
+        })
+
         reset
 
       }

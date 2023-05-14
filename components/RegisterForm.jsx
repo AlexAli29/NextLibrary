@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import GoogleIcon from "./ui/GoogleIcon";
 import { useActions } from "@/hooks/useActions";
+import { useToast } from "@chakra-ui/react";
 
 export const RegisterForm = () => {
 
@@ -12,7 +13,7 @@ export const RegisterForm = () => {
   const router = useRouter();
   const [error, setError] = useState('');
   const [registerUser, { isLoading }] = useRegisterMutation();
-
+  const toast = useToast();
   const [getUser, { isLoading: userLoading }] = useGetUserMutation();
 
 
@@ -31,16 +32,24 @@ export const RegisterForm = () => {
       }
 
       if (!error) {
+        setError('');
         const { accessToken } = data;
 
-        dispatch(setToken(accessToken));
+        setToken(accessToken);
 
         const { data: userData } = await getUser();
         const { userData: user } = userData;
-
-
         setUserData(user);
         router.push('/');
+        toast({
+          title: 'Account created.',
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+          position: 'bottom'
+        })
+
+
         reset
 
       }

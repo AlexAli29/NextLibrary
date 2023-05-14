@@ -6,10 +6,12 @@ import Link from 'next/link';
 import { useLogoutMutation } from '@/services/api/handleReqApiSlice';
 import { useActions } from '@/hooks/useActions';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@chakra-ui/react';
 
 export default function UserDropDown({ user }) {
 
   const router = useRouter();
+  const toast = useToast();
   const { logOut, removeUserData } = useActions();
   const [dropDownActive, setDropDownActive] = useState(false);
   const [logout] = useLogoutMutation();
@@ -26,6 +28,13 @@ export default function UserDropDown({ user }) {
     await logout();
     logOut();
     removeUserData();
+    toast({
+      title: `Logged out`,
+      status: 'error',
+      duration: 1000,
+      isClosable: true,
+      position: 'bottom'
+    })
     router.push('/');
   }
 

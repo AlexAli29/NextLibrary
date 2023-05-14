@@ -1,15 +1,16 @@
 'use client'
+import { AdminTabs } from '@/components/AdminTabs';
+import { BooksOrdersCounter } from '@/components/BooksOrdersCounter';
+import { UserTabs } from '@/components/UserTabs';
 import { useActions } from '@/hooks/useActions';
 import { useUser } from '@/hooks/useUser'
 import { useLogoutMutation } from '@/services/api/handleReqApiSlice';
-import { Tab } from '@headlessui/react';
 import { useRouter } from 'next/navigation';
 
 
 
 
 export default function UserProfile() {
-
 
   const { logOut, removeUserData } = useActions()
   const user = useUser();
@@ -45,17 +46,11 @@ export default function UserProfile() {
                   </div>
                 </div>
                 <div class="w-full lg:w-4/12 px-4 lg:order-1">
-                  <div class="flex justify-center py-4 lg:pt-4 pt-8">
-                    <div class="mr-4 p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">22</span><span class="text-sm text-blueGray-400">Orders</span>
-                    </div>
-                    <div class="mr-4 p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">10</span><span class="text-sm text-blueGray-400">Books</span>
-                    </div>
-                    <div class="lg:mr-4 p-3 text-center">
-                      <span class="text-xl font-bold block uppercase tracking-wide text-blueGray-600">89</span><span class="text-sm text-blueGray-400">Comments</span>
-                    </div>
-                  </div>
+                  <>
+                    {
+                      user?.roleName == 'Admin' ? null : <BooksOrdersCounter />
+                    }
+                  </>
                 </div>
               </div>
               <div class="text-center mt-4">
@@ -70,16 +65,9 @@ export default function UserProfile() {
               <div class="mt-2 py-2 border-t border-blueGray-200 text-center">
                 <div class="flex flex-wrap justify-center">
                   <div class="w-full lg:w-9/12 px-4 text-[1.4rem] flex flex-col items-center">
-                    <Tab.Group>
-                      <Tab.List className='bg-gray-200 w-fit px-1 py-1 rounded-lg  flex justify-center space-x-1'>
-                        <Tab className=' px-3 rounded-lg  focus:outline-none  ui-selected:bg-red-400 ui-selected:text-white '>Books</Tab>
-                        <Tab className='px-3 rounded-lg ui-selected:bg-red-400 ui-selected:text-white focus:outline-none'>Orders</Tab>
-                      </Tab.List>
-                      <Tab.Panels>
-                        <Tab.Panel>Book list</Tab.Panel>
-                        <Tab.Panel>Orders list</Tab.Panel>
-                      </Tab.Panels>
-                    </Tab.Group>
+                    <>
+                      {user?.roleName === "Admin" ? <AdminTabs /> : <UserTabs />}
+                    </>
                   </div>
                 </div>
               </div>

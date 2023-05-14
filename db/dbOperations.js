@@ -256,7 +256,22 @@ const addUser = async (user) => {
   }
 }
 
+const getAllUsers = async (userId) => {
 
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT Users.userId, Users.userName, Users.userEmail, Users.userImage,Users.passwordHash , Roles.roleName
+    FROM Users
+    JOIN Roles ON Users.roleId = Roles.roleId`);
+
+    return data.recordset;
+
+  } catch (err) {
+
+    console.log('Error from getAllUsers: ' + err);
+  }
+}
 
 const getUserById = async (userId) => {
 
@@ -352,6 +367,223 @@ const deleteRefreshToken = async (userId) => {
   }
 }
 
+
+const getOrdersByUserId = async (userId) => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT 
+    o.orderId, 
+    o.userId, 
+    o.bookId,
+    b.bookName,
+    b.bookPrice,
+    b.bookRating,
+    b.bookAuthor,
+    b.bookYear,
+    b.bookDescription,
+    b.bookImage,
+    b.categoryId,
+    b.isArchived,
+    b.bookRatesAmount
+FROM 
+    Orders o
+JOIN 
+    Books b ON o.bookId = b.bookId
+WHERE 
+    o.userId =${userId};`);
+
+    return data.recordset;
+
+  } catch (err) {
+    console.log('Error from getOrdersByUserId: ' + err);
+  }
+}
+
+const getOrdersByUserIdAndBookId = async (userId, bookId) => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT 
+    o.orderId, 
+    o.userId, 
+    o.bookId,
+    b.bookName,
+    b.bookPrice,
+    b.bookRating,
+    b.bookAuthor,
+    b.bookYear,
+    b.bookDescription,
+    b.bookImage,
+    b.categoryId,
+    b.isArchived,
+    b.bookRatesAmount
+FROM 
+    Orders o
+JOIN 
+    Books b ON o.bookId = b.bookId
+WHERE 
+    o.userId =${userId} AND o.bookId=${bookId};`);
+
+    return data.recordset;
+
+  } catch (err) {
+    console.log('Error from getOrdersByUserId: ' + err);
+  }
+}
+
+const getAllOrders = async (userId) => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT  
+    o.orderId, 
+    o.userId, 
+    u.userName, 
+    o.bookId,
+    b.bookName,
+    b.bookPrice,
+    b.bookRating,
+    b.bookAuthor,
+    b.bookYear,
+    b.bookDescription,
+    b.bookImage,
+    b.categoryId,
+    b.isArchived,
+    b.bookRatesAmount
+FROM 
+    Orders o
+JOIN 
+    Books b ON o.bookId = b.bookId    
+JOIN 
+    Users u ON o.userId = u.userId;
+`);
+
+    return data.recordset;
+
+  } catch (err) {
+    console.log('Error from getAllOrders: ' + err);
+  }
+}
+
+const addOrder = async (userId, bookId) => {
+
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+      .input('userId', userId)
+      .input('bookId', bookId)
+      .output('orderId', sql.Int)
+      .query(`
+      INSERT INTO Orders (userId, bookId)
+      OUTPUT inserted.orderId
+      VALUES (@userId, @bookId)
+    `);
+
+    const newUserId = result.recordset[0].userId;
+    return newUserId;
+
+  } catch (err) {
+
+    console.log('Error from addOrder: ' + err);
+  }
+}
+
+const deleteOrder = async (orderId) => {
+  try {
+    const pool = await connect();
+
+    await pool.request().query(`DELETE FROM Orders
+    WHERE orderId = ${orderId};`);
+
+  } catch (err) {
+
+    console.log('Error from deleteOrder: ' + err);
+  }
+}
+
+const getUserBooks = async (userId) => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT   
+    ub.bookId,
+    ub.userId,
+    b.bookName,
+    b.bookPrice,
+    b.bookRating,
+    b.bookAuthor,
+    b.bookYear,
+    b.bookDescription,
+    b.bookImage,
+    b.categoryId,
+    b.isArchived,
+    b.bookRatesAmount
+FROM 
+    UserBooks ub
+JOIN 
+    Books b ON ub.bookId = b.bookId
+WHERE 
+    ub.userId = ${userId};
+`);
+
+    return data.recordset;
+
+  } catch (err) {
+    console.log('Error from getUserBooks: ' + err);
+  }
+}
+
+const deleteUserBook = async (userId, bookId) => {
+  try {
+    const pool = await connect();
+
+    await pool.request().query(`DELETE FROM UserBooks
+    WHERE bookId = ${bookId} AND userId= ${userId};`);
+
+  } catch (err) {
+
+    console.log('Error from deleteUserBook: ' + err);
+  }
+}
+
+const searchUserBook = async (userId, bookId) => {
+  try {
+    const pool = await connect();
+
+    const data = await pool.request().query(`SELECT * FROM UserBooks
+    WHERE bookId = ${bookId} AND userId= ${userId};`);
+    return data.recordset;
+  } catch (err) {
+    console.log('Error from searchUserBook: ' + err);
+  }
+}
+
+const addUserBook = async (userId, bookId) => {
+
+  try {
+    const pool = await connect();
+
+    const result = await pool
+      .request()
+      .input('bookId', bookId)
+      .input('userId', userId)
+      .query(`
+      INSERT INTO UserBooks (bookId, userId)      
+      VALUES (@bookId, @userId)
+    `);
+
+
+    return result;
+
+  } catch (err) {
+
+    console.log('Error from addUserBook: ' + err);
+  }
+}
+
 module.exports = {
   getAllBooks,
   getSearchedBooks,
@@ -369,5 +601,15 @@ module.exports = {
   addBookImage,
   getBookById,
   getSearchedBooksAdmin,
-  archiveBook
+  archiveBook,
+  getOrdersByUserId,
+  getAllOrders,
+  deleteOrder,
+  getUserBooks,
+  deleteUserBook,
+  addUserBook,
+  addOrder,
+  getOrdersByUserIdAndBookId,
+  searchUserBook,
+  getAllUsers
 };

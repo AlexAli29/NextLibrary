@@ -1,7 +1,7 @@
-import { getOrdersByUserId, deleteOrder, getAllOrders, addOrder, getOrdersByUserIdAndBookId, getUserById, searchUserBook } from "@/db/dbOperations";
+import { addUserBook, deleteUserBook, getUserBooks } from "@/db/dbOperations";
 const jwt = require('jsonwebtoken');
 
-const Orders = async (req, res) => {
+const UserBooks = async (req, res) => {
 
   if (req.method == "GET") {
     try {
@@ -13,16 +13,8 @@ const Orders = async (req, res) => {
       const decodedToken = jwt.decode(accessToken);
 
       const { userId } = decodedToken;
-      const [userData] = await getUserById(userId);
-      let orders
-      if (userData.roleName == "Admin") {
-        console.log(userData.roleName)
-        orders = await getAllOrders();
-        return res.status(200).json(orders);
-      }
-
-      orders = await getOrdersByUserId(userId);
-      return res.status(200).json(orders);
+      const books = await getUserBooks(userId);
+      return res.status(200).json(books);
     } catch (err) {
       console.log(err)
       return res.status(500).json({ err: err.message });
@@ -31,24 +23,17 @@ const Orders = async (req, res) => {
 
   if (req.method == "POST") {
     try {
-      const { bookId } = req.body
+      const { bookId, userId } = req.body
       const authHeader = req.headers["authorization"];
 
       const accessToken = authHeader.split(" ")[1];
 
       const decodedToken = jwt.decode(accessToken);
 
-      const { userId } = decodedToken;
+      const { userId: currentUserId } = decodedToken;
 
-      const orders = await getOrdersByUserIdAndBookId(userId, bookId);
-      const book = await searchUserBook(userId, bookId);
-      if (book.length) {
-        return res.status(500).json({ message: 'You already have this books' });
-      }
-      if (orders.length) {
-        return res.status(500).json({ message: 'This book already ordered' });
-      }
-      await addOrder(userId, bookId);
+      await addUserBook(userId, bookId);
+
 
       return res.status(200).json();
     } catch (err) {
@@ -61,7 +46,7 @@ const Orders = async (req, res) => {
 
     try {
 
-      const { orderId } = req.body
+      const { bookId } = req.body
       const authHeader = req.headers["authorization"];
 
       const accessToken = authHeader.split(" ")[1];
@@ -70,7 +55,7 @@ const Orders = async (req, res) => {
 
       const { userId } = decodedToken;
 
-      await deleteOrder(orderId);
+      await deleteUserBook(userId, bookId);
 
       return res.status(200).json();
     } catch (err) {
@@ -79,4 +64,4 @@ const Orders = async (req, res) => {
     }
   }
 };
-export default Orders;
+export default UserBooks;

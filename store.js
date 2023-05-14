@@ -4,6 +4,7 @@ import userSlice from "./slices/userSlice";
 import bookSlice from "./slices/bookSlice";
 import { apiSlice } from "./services/api/apiSlice";
 import archiveSlice from "./slices/archiveSlice";
+import orderSlice from "./slices/orderSlice";
 
 export const store = configureStore({
 
@@ -14,6 +15,7 @@ export const store = configureStore({
     token: tokenSlice,
     user: userSlice,
     book: bookSlice,
+    order: orderSlice
   },
 
   middleware: (getDefaultMiddleware) =>

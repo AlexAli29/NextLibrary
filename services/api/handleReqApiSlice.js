@@ -10,9 +10,62 @@ export const reqHandler = apiSlice.injectEndpoints({
       }),
     }),
 
+    getOrders: build.mutation({
+      query: () => ({
+        url: "api/auth/order",
+        method: "GET",
+      }),
+    }),
+
+    getUserBooks: build.mutation({
+      query: () => ({
+        url: "api/auth/userbooks",
+        method: "GET",
+      }),
+    }),
+
+    addUserBooks: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/userbooks",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+
+    deleteUserBooks: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/userbooks",
+        method: "PATCH",
+        body: credentials,
+      }),
+    }),
+
+    addOrder: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/order",
+        method: "POST",
+        body: credentials,
+      }),
+    }),
+
+    deleteOrder: build.mutation({
+      query: (credentials) => ({
+        url: "api/auth/order",
+        method: "PATCH",
+        body: credentials,
+      }),
+    }),
+
     getArchivedBooks: build.mutation({
       query: () => ({
         url: "api/auth/admin/archive",
+        method: "GET",
+      }),
+    }),
+
+    getAllUsers: build.mutation({
+      query: () => ({
+        url: "api/auth/admin/users",
         method: "GET",
       }),
     }),
@@ -122,5 +175,11 @@ export const {
   useEditBookMutation,
   useGetArchivedBooksMutation,
   useToggleArchiveMutation,
-
+  useAddOrderMutation,
+  useGetOrdersMutation,
+  useDeleteOrderMutation,
+  useAddUserBooksMutation,
+  useDeleteUserBooksMutation,
+  useGetUserBooksMutation,
+  useGetAllUsersMutation
 } = reqHandler;

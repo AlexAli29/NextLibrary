@@ -77,14 +77,11 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
       as={Fragment}>
-      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset(); }} className={`flex pt-2 items-center   rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] flex-col pb-3 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
+      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset(); }} className={`flex items-center   rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col pb-3 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
 
-        <CloseModalIcon classes='w-5 h-5 absolute right-[1rem]' setModalActive={setModalActive} />
-
-        <Dialog.Panel className="mb-6 w-full ">
-          <span className="text-red-700 font-medium text-2xl w-full flex justify-center  tracking-widest ">Add Book</span>
-        </Dialog.Panel>
-        <Dialog.Panel className='w-full'>
+        <Dialog.Panel className='flex flex-col items-center w-full'>
+          <CloseModalIcon classes='w-5 h-5 mt-3  absolute right-[1rem]' setModalActive={setModalActive} />
+          <span className=" p-2 mb-2  text-red-700 font-medium text-2xl tracking-widest ">Add Book</span>
           <form className="flex flex-col space-y-6 w-[100%] items-center " onSubmit={handleSubmit(onSubmit)}>
 
             <div className="  flex w-[100%] space-x-6 px-8  ">
