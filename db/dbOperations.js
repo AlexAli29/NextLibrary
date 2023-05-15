@@ -90,7 +90,7 @@ const addBook = async (book) => {
 
   try {
     const pool = await connect();
-
+    console.log(book)
     const result = await pool
       .request()
       .input('bookName', book.bookName)
@@ -99,14 +99,15 @@ const addBook = async (book) => {
       .input('bookAuthor', book.bookAuthor)
       .input('bookYear', book.bookYear)
       .input('bookDescription', book.bookDescription)
+      .input('bookImage', book.bookImage)
       .input('categoryId', book.categoryId)
       .input('isArchived', false)
       .input('bookRatesAmount', 0)
       .output('bookId', sql.Int)
       .query(`
-      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, categoryId, isArchived,bookRatesAmount)
+      INSERT INTO Books (bookName, bookPrice, bookRating, bookAuthor, bookYear, bookDescription, bookImage, categoryId, isArchived,bookRatesAmount)
       OUTPUT inserted.bookId
-      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription, @categoryId, @isArchived,@bookRatesAmount)
+      VALUES (@bookName, @bookPrice, @bookRating, @bookAuthor, @bookYear, @bookDescription,@bookImage,  @categoryId, @isArchived,@bookRatesAmount)
     `);
 
     const newBookId = result.recordset[0].bookId;

@@ -4,28 +4,31 @@ import { Fragment, useState } from "react"
 import { useForm } from "react-hook-form";
 import CloseModalIcon from "./CloseModalIcon";
 import CategoriesDropDown from "./CategoriesDropDown";
-import { useAddBookImageMutation, useAddBookMutation } from "@/services/api/handleReqApiSlice";
+import { useAddBookImageMutation, useAddBookMutation, useLoadImageMutation } from "@/services/api/handleReqApiSlice";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/ui/Loader";
 import { Dialog, Transition } from "@headlessui/react";
+import axios from "axios";
 
 export default function AddBookModal({ modalActive = false, setModalActive }) {
 
   const router = useRouter();
   const [categoryError, setCategoryError] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState();
+
+  const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState();
   const [selectedFile, setSelectedFile] = useState();
   const [fileError, setFileError] = useState(false);
   const [addBook, { isLoading }] = useAddBookMutation();
-  const [addBookImage, { isLoading: isImageLoading }] = useAddBookImageMutation();
+
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
   const handleFileInput = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+
     setFileName(e.target.files[0]?.name)
+    setSelectedFile(e.target.files[0]);
     setFileError(false)
   }
 
@@ -43,23 +46,31 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
       setCategoryError(false);
       setFileError(false);
       const { bookName, bookPrice, bookAuthor, bookYear, bookDescription } = data;
-      const formData = new FormData();
-      formData.append("Image", selectedFile);
+
 
 
       try {
+        setLoading(true);
         const categoryId = selectedCategory.Id;
+        const formData = new FormData();
 
 
-        const { data: BookId } = await addBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
+        formData.append("file", selectedFile);
+        formData.append("upload_preset", "my-uploads");
 
+        const image = await axios.post(
+          `https://api.cloudinary.com/v1_1/developedby-me/image/upload`,
+          formData
+        );
+        const finalData = image.data;
 
-        formData.append("BookId", BookId)
-
-        const data = await addBookImage(formData);
+        debugger
+        const { data: BookId } = await addBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage: finalData.secure_url, categoryId });
         router.refresh();
-        setModalActive(false);
+        setLoading(false);
         reset();
+        setModalActive(false);
+
       }
       catch (err) {
         console.log(err)
@@ -77,7 +88,7 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
       as={Fragment}>
-      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset(); }} className={`flex items-center   rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col pb-3 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
+      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset(); }} className={`flex items-center   rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col pb-3 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(loading || isLoading) ? 'pointer-events-none' : ''}`}>
 
         <Dialog.Panel className='flex flex-col items-center w-full'>
           <CloseModalIcon classes='w-5 h-5 mt-3  absolute right-[1rem]' setModalActive={setModalActive} />
@@ -97,7 +108,8 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
 
                 <div className="relative flex flex-col w-[100%] items-center">
                   <input {...register('bookPrice', {
-                    required: "Price is required field"
+                    required: "Price is required field",
+                    min: 0
                   })} className="addbookinput" type="text" placeholder="Price " />
                   {errors?.bookPrice && (
                     <div className="text-xs absolute left-0 bottom-[-1.2rem] text-red-600 pl-6 pt-1 ">{errors?.bookPrice?.message}</div>
@@ -115,7 +127,9 @@ export default function AddBookModal({ modalActive = false, setModalActive }) {
 
                 <div className="relative flex flex-col w-[100%] items-center">
                   <input {...register('bookYear', {
-                    required: "Year is required field"
+                    required: "Year is required field",
+                    min: 0,
+                    max: new Date().getFullYear(),
                   })} className="addbookinput" type="text" placeholder="Year " />
                   {errors?.bookYear && (
                     <div className="text-xs absolute left-0 bottom-[-1.3rem] text-red-600 pl-6 pt-1 ">{errors.bookYear.message}</div>
@@ -153,7 +167,7 @@ rounded-lg cursor-pointer bg-gray-50 hover:bg-bray-800 hover:scale-[102%]  hover
               {fileError ? (<div className="text-xs absolute left-0 bottom-[-1.3rem] text-red-600 pl-6 pt-1 ">Choose image</div>) : null}
             </div>
 
-            {(isLoading || isImageLoading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Add</button>}
+            {(isLoading || loading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Add</button>}
 
 
 

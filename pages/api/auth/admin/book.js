@@ -8,9 +8,9 @@ const AdminBooks = async (req, res) => {
     try {
 
 
-      const { bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId } = req.body;
+      const { bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId } = req.body;
 
-      const BookId = await addBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, categoryId });
+      const BookId = await addBook({ bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId });
 
       return res.status(200).json(BookId);
     } catch (err) {
@@ -25,6 +25,7 @@ const AdminBooks = async (req, res) => {
 
 
       const { bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId } = req.body;
+      console.log(bookImage);
       console.log('im here')
       const BookId = await updateBook({ bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage, categoryId });
 

@@ -10,6 +10,16 @@ export const reqHandler = apiSlice.injectEndpoints({
       }),
     }),
 
+    loadImage: build.mutation({
+      query: (credentials) => ({
+        url: "`https://api.cloudinary.com/v1_1/developedby-me/image/upload",
+        method: "POST",
+        body: credentials,
+        formData: true
+      }),
+    }),
+
+
     getOrders: build.mutation({
       query: () => ({
         url: "api/auth/order",
@@ -181,5 +191,6 @@ export const {
   useAddUserBooksMutation,
   useDeleteUserBooksMutation,
   useGetUserBooksMutation,
-  useGetAllUsersMutation
+  useGetAllUsersMutation,
+  useLoadImageMutation
 } = reqHandler;

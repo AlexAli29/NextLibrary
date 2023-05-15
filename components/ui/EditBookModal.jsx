@@ -10,6 +10,7 @@ import Loader from "@/components/ui/Loader";
 import { Dialog, Transition } from "@headlessui/react";
 import EditCategoriesDropDown from "./EditCategoriesDropdown";
 import { Fragment } from "react";
+import axios from "axios";
 
 export default function EditBookModal({ modalActive = false, setModalActive, book }) {
 
@@ -21,7 +22,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   const [selectedFile, setSelectedFile] = useState();
   const [fileError, setFileError] = useState(false);
   const [editBook, { isLoading }] = useEditBookMutation();
-  const [addBookImage, { isLoading: isImageLoading }] = useAddBookImageMutation();
+
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     values: {
@@ -34,9 +35,8 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
   });
 
   const handleFileInput = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
     setFileName(e.target.files[0]?.name)
+    setSelectedFile(e.target.files[0]);
     setFileError(false)
   }
 
@@ -47,19 +47,31 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
     }
 
     if (selectedCategory) {
+      debugger
       setCategoryError(false);
       const { bookName, bookPrice, bookAuthor, bookYear, bookDescription } = data;
 
       try {
         const categoryId = selectedCategory.Id;
-        const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage: book.bookImage, categoryId });
+        const formData = new FormData();
 
-        if (selectedFile) {
-          const formData = new FormData();
-          formData.append("Image", selectedFile);
-          formData.append("BookId", BookId)
 
-          const data = await addBookImage(formData);
+        formData.append("file", selectedFile);
+        formData.append("upload_preset", "my-uploads");
+
+        try {
+          const image = await axios.post(
+            `https://api.cloudinary.com/v1_1/developedby-me/image/upload`,
+            formData
+          );
+          const finalData = image.data;
+
+          if (finalData) {
+            const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage: finalData.secure_url, categoryId });
+          }
+
+        } catch (error) {
+          const { data: BookId } = await editBook({ bookId: book.bookId, bookName, bookPrice, bookAuthor, bookYear, bookDescription, bookImage: book.bookImage, categoryId });
         }
         router.refresh();
         setModalActive(false);
@@ -79,7 +91,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
       leaveFrom="transform scale-100 opacity-100"
       leaveTo="transform scale-95 opacity-0"
       as={Fragment}>
-      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset() }} className={`flex items-center  rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col pb-5 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isImageLoading || isLoading) ? 'pointer-events-none' : ''}`}>
+      <Dialog as='div' open={modalActive} onClose={() => { setModalActive(false); reset() }} className={`flex items-center  rounded-3xl z-[150] bg-[rgba(254,136,109,0.3)]  absolute left-[50%] top-[30rem] translate-x-[-50%] translate-y-[-50%] flex-col pb-5 w-[50rem] backdrop-blur-[50px] shadow-lg  add_book_modal ${(isLoading) ? 'pointer-events-none' : ''}`}>
         <Dialog.Panel className='flex flex-col items-center w-full'>
           <CloseModalIcon classes='w-5 h-5 mt-3 absolute right-[1rem]' setModalActive={setModalActive} />
           <span className=" p-2 mb-2  text-red-700 font-medium text-2xl tracking-widest ">Edit Book</span>
@@ -155,7 +167,7 @@ export default function EditBookModal({ modalActive = false, setModalActive, boo
 
             </div>
 
-            {(isLoading || isImageLoading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Edit</button>}
+            {(isLoading) ? <Loader style='w-9 h-9  mr-2 text-gray-200 animate-spin dark:text-orange-200 fill-red-300 z-[1000]' /> : <button className="bg-[#F7A996] text-gray-50 font-normal hover:scale-[103%] hover:shadow-md active:scale-[98%]  py-[.2rem] px-10 rounded-2xl ease-in duration-75" type="submit">Edit</button>}
 
 
 

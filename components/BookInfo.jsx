@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image';
-import BookImage from '../public/book.jpg';
+// import BookImage from '../public/book.jpg';
 import { useState } from 'react';
 import ReactStars from 'react-stars';
 import { useRouter } from 'next/navigation';
@@ -58,7 +58,7 @@ export default function BookInfo({ book }) {
         <div className='relative flex flex-col items-center w-[23rem] h-[35rem] '>
 
 
-          <Image className='w-[20rem]' fill src={book.bookImage ? book.bookImage : BookImage} />
+          <Image className='w-[20rem]' fill src={book.bookImage} />
 
         </div>
         <div className='flex flex-col'>
